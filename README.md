@@ -1,6 +1,6 @@
 # CSC510-15
 
-QuestionHelperBot is an intelligent slack chat bot which can deteting questions asked in a conversation and provide necessary help to answer the question.
+QuestionHelperBot is an intelligent slack chat bot which can detete questions asked in a conversation and provide necessary help to answer the question.
 
 
 ## Team member
