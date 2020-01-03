@@ -1,0 +1,79 @@
+---
+- hosts: localhost
+  tasks:
+    - name: Clean directory
+      file:
+        state: absent
+        path: /tmp/botfolder
+        
+    - name: Ensure repo is up-to-date
+      git:
+          repo: git@github.ncsu.edu:csc510-fall2019/CSC510-15.git
+          dest: /tmp/botfolder
+
+- hosts: remote1
+  vars:
+    tmp: /tmp
+    app_dest: '{{tmp}}/botfolder/'
+    bot_dest: '~/botfolder/bot/'
+
+  tasks:
+
+    - name: Kill runApp
+      action: shell pkill -f runApp.sh 
+      ignore_errors: True
+      become: yes
+
+    - name: Kill Python File
+      action: shell pkill -f QuestionHelper.py 
+      ignore_errors: True
+      become: yes
+
+    - name: Clean directory
+      file:
+        state: absent
+        path: "{{ app_dest }}"
+
+    - name: Synchronization github folder on the control machine to dest on the remote hosts
+      synchronize:
+        src: /tmp/botfolder
+        dest: ~/
+
+    - name: Update apt, install pip
+      apt:
+        update_cache: yes
+        pkg:
+          - python3-pip
+      become: yes
+
+    - name: Install packages
+      pip:
+        name: 
+          - flask
+          - slackeventsapi
+          - slackclient==1.0.7
+          - sklearn
+        executable: pip3
+
+    - name: start app
+      shell: nohup ./runApp.sh {{secret1}} {{secret2}} &
+      register: result
+      args:
+        chdir: '{{ bot_dest }}'
+
+    - debug:
+        var: result
+        
+
+
+
+
+
+
+
+
+
+
+    
+
+
